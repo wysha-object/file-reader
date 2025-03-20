@@ -20,14 +20,14 @@ public class MainUI extends JFrame {
 
     public MainUI() {
         System.out.println("Welcome!");
-        setTitle("FileReader "+VERSION);
+        setTitle("file-reader "+VERSION);
         version.setText(VERSION);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         numberOfColumns.setValue(16);
         radixSpinner.setValue(16);
         setContentPane(contentPane);
         Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize().getSize();
-        setSize(dimension.width / 2, dimension.height / 2);
+        setSize(dimension.width / 3, dimension.height / 3);
         setLocationRelativeTo(null);
         chooseFileButton.addActionListener(e -> {
             JFileChooser jFileChooser = new JFileChooser();

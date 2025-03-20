@@ -2,6 +2,7 @@ package cn.com.wysha;
 
 import javax.swing.*;
 import javax.swing.event.TableModelEvent;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.io.File;
@@ -31,6 +32,7 @@ public class DataView extends JFrame {
     private JButton saveButton;
     private JButton readButton;
     private JButton overWriteButton;
+    private JScrollBar scrollBar;
 
     public DataView(File current, int radix, int numberOfColumns) {
         this.current = current;
@@ -47,18 +49,54 @@ public class DataView extends JFrame {
         read(0, numberOfColumns);
         setCurrent(0, numberOfColumns);
         Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
+
+        DefaultTableCellRenderer valueRenderer = new DefaultTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object value,
+                                                           boolean isSelected, boolean hasFocus, int row, int column) {
+                Component c = super.getTableCellRendererComponent(table, value,
+                        isSelected, hasFocus, row, column);
+
+                if (column == 0) {
+                    c.setBackground(new Color(243,243,255));
+                } else {
+                    c.setBackground(table.getBackground());
+                }
+                c.setForeground(table.getForeground());
+                setFont(new Font("Consolas", Font.PLAIN, 12)); // 保持原有字体设置
+                return c;
+            }
+        };
+
         JTable valuesJTable = new JTable(valuesJTableModel);
-        valuesJPanel.add(valuesJTable.getTableHeader(), BorderLayout.NORTH);
         JTable charsJTable = new JTable(charsJTableModel);
+
+        valuesJTable.setDefaultRenderer(Object.class,valueRenderer);
+        charsJTable.setDefaultRenderer(Object.class,valueRenderer);
+
+        valuesJTable.setRowHeight(24);
+        charsJTable.setRowHeight(24);
+        valuesJTable.setFont(new Font("Consolas", Font.PLAIN, 12));
+        charsJTable.setFont(new Font("Consolas", Font.PLAIN, 12));
+        valuesJPanel.add(valuesJTable.getTableHeader(), BorderLayout.NORTH);
         charsJPanel.add(charsJTable.getTableHeader(), BorderLayout.NORTH);
-        valuesJPanel.add(new JScrollPane(valuesJTable), BorderLayout.CENTER);
-        charsJPanel.add(new JScrollPane(charsJTable), BorderLayout.CENTER);
+        JScrollPane valuesScrollPane = new JScrollPane(valuesJTable);
+        JScrollPane charsScrollPane = new JScrollPane(charsJTable);
+        valuesScrollPane.setBorder(BorderFactory.createEmptyBorder());
+        charsScrollPane.setBorder(BorderFactory.createEmptyBorder());
+        valuesJPanel.add(valuesScrollPane, BorderLayout.CENTER);
+        charsJPanel.add(charsScrollPane, BorderLayout.CENTER);
         valuesJTable.getTableHeader().setReorderingAllowed(false);
         charsJTable.getTableHeader().setReorderingAllowed(false);
         DefaultTableModel listJTableModel = new DefaultTableModel();
         JTable list = new JTable(listJTableModel);
         list.setEnabled(false);
+
+        valuesScrollPane.setVerticalScrollBar(scrollBar);
+        charsScrollPane.setVerticalScrollBar(scrollBar);
+
         setSize(dimension.width / 2, dimension.height / 2);
+
         readButton.addActionListener(e -> {
             Choose choose = new Choose();
             choose.setVisible(true);
